@@ -1,4 +1,5 @@
 import React , { Component } from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames'
 export default class Toast extends Component{
     constructor(props,context){
@@ -9,15 +10,11 @@ export default class Toast extends Component{
     }
     static defaultProps={
         prefixCls:'cue',
-        time:3000, //Toast 显示总时间 毫秒
-        eTime: 500,//Toast离开动画时间 毫秒
-        boxName:undefined, // Toast容器样式名
-        contentName:undefined, // Toast内容样式名
-        enterName:'cue-bouncein',//Toast 进场动画
-        leaveName:'cue-bounceout',//Toast 离场动画
-        content:'',//Toast 显示的具体内容
-        icon:undefined,//Toast 图标
-        close:()=>{} //Toast 关闭事件
+        keep: false,
+        time:3000,
+        eTime: 500,
+        enterName:'cue-bouncein',
+        leaveName:'cue-bounceout',
     }
     setAnimateTime(time,eTime){
         this.clearTimer();
@@ -31,10 +28,8 @@ export default class Toast extends Component{
         }
     }
     componentDidMount(){
-        let {time,eTime}= this.props;
-        if(time === 'keep'){
-            return
-        }
+        let {time,eTime,keep}= this.props;
+        if(keep)return;
         this.setAnimateTime(time,eTime);
     }
     componentWillUnmount () {
@@ -66,7 +61,6 @@ export default class Toast extends Component{
             icon
         } = this.props;
         let { leave } =this.state;
-
         let divClassName=classNames({
             [contentName]:true,
             [enterName]:!leave,
@@ -81,4 +75,18 @@ export default class Toast extends Component{
             </div>
         )
     }
+}
+
+Toast.propTypes={
+    prefixCls:PropTypes.string,//Toast className前缀
+    keep:PropTypes.bool,//Toast 是否一直保持展示状态
+    time:PropTypes.number, //Toast 显示总时间 毫秒
+    eTime: PropTypes.number,//Toast离开动画时间 毫秒
+    boxName:PropTypes.string, // Toast容器样式名
+    contentName:PropTypes.string, // Toast内容样式名
+    enterName:PropTypes.string,//Toast 进场动画
+    leaveName:PropTypes.string,//Toast 离场动画
+    content:PropTypes.string,//Toast 显示的具体内容
+    icon:PropTypes.node,//Toast 图标
+    close:PropTypes.func//Toast 关闭事件
 }

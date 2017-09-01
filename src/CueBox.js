@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import ReactDOM,{render} from 'react-dom';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Toast from './Toast'
 
@@ -12,12 +13,7 @@ export default class CueBox extends Component{
         }
     }
     static defaultProps={
-        //默认的className前缀
-        prefixCls:'cue',
-        //Cue容器的className 默认为prefixCls的值加‘-box’ 例如这里是cue-box 如果传人则使用传入的值作为cue容器的className
-        boxName:undefined,
-        //规则同boxName，为Cue容器遮罩层的样式 默认为cue-mask
-        maskName:undefined
+        prefixCls:'cue'
     }
     decorateNotice(notice){
         let {hasMask,close} = notice;
@@ -124,3 +120,12 @@ CueBox.renderBox = function (props={}) {
         }
     });
 };
+
+CueBox.propTypes={
+    //默认的className前缀
+    prefixCls:PropTypes.string,
+    //Cue容器的className 默认为prefixCls的值加‘-box’ 例如这里是cue-box 如果传人则使用传入的值作为cue容器的className
+    boxName:PropTypes.string,
+    //规则同boxName，为Cue容器遮罩层的样式 默认为cue-mask
+    maskName:PropTypes.string
+}
