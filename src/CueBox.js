@@ -22,7 +22,6 @@ export default class CueBox extends Component{
     decorateNotice(notice){
         let {hasMask,close} = notice;
         let {prefixCls} = this.props;
-        let _this = this;
         notice.ref = notice.key = `${prefixCls}-${Date.now()}`;
         notice.hasMask = !!hasMask;
         notice.prefixCls = prefixCls;
@@ -32,7 +31,7 @@ export default class CueBox extends Component{
                 close()
             }
             //调用remove完成notice再CueBox中的卸载
-            _this.remove(notice.key)
+            this.remove(notice.key)
         };
         return notice;
     }
@@ -92,17 +91,14 @@ export default class CueBox extends Component{
             maskName=`${prefixCls}-mask`
         } = this.props;
         const { notices,hasMask} = this.state;
-        if(notices.length<=0){
-            return(<div></div>);
-        }
+        const lengthFlag = notices.length>0;
         let boxClassName=classNames({
-            [boxName]:true,
+            [boxName]:lengthFlag,
             [maskName]:hasMask,
         });
         return(<div className={boxClassName}>
-            {this.getNoticeDom()}
+            {lengthFlag && this.getNoticeDom()}
         </div>)
-
     }
 };
 //props为初始化CueBox的属性
