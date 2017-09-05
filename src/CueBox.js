@@ -47,6 +47,7 @@ export default class CueBox extends Component{
         newNotices = notices.map((item,index)=>{
             //浅比对
             let flag = Object.keys(notice).every(key => {
+                if(notice[key] && !item[key]) return false;
                 if(typeof notice[key] == 'function'){
                     return notice[key].toString() === item[key].toString();
                 }
