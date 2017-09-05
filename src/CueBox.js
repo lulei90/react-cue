@@ -13,47 +13,73 @@ export default class CueBox extends Component{
         }
     }
     static defaultProps={
-        prefixCls:'cue'
-    }
+        prefixCls:'cue',
+    };
     decorateNotice(notice){
-        let {hasMask,close} = notice;
+        let {hasMask} = notice;
         let {prefixCls} = this.props;
-        notice.ref = notice.key = `${prefixCls}-${Date.now()}`;
+        //增加唯一索引 key和ref 使用当前毫秒数加1~100的随机数字
+        notice.ref = notice.key = `${prefixCls}-${Date.now()}${Math.ceil(Math.random()*(100-1)+1)}`;
+        //用来表示当前的notice是否需要展示遮罩层
         notice.hasMask = !!hasMask;
+        //把当前的className前缀像子集传递
         notice.prefixCls = prefixCls;
-        //给每个notice元素绑定一个close回调方法，用于关闭前的回调
-        notice.close=()=>{
-            if(close){
-                close()
-            }
-            //调用remove完成notice再CueBox中的卸载
-            this.remove(notice.key)
-        };
+        //count 用来判断当前notice被促发几次更改 默认初始化为1;
+        notice.count = 0;
         return notice;
     }
     close(key){
         this.refs[key].close()
     }
+    /**
+     * @param notice 默认包含hasMask、component、close、unique等配置
+     * hasMask {boolean} 表示是否需要显示遮罩层
+     * component {element} 需要显示的件
+     * close {function} 组件默认的关闭方法
+     * @returns {string} 返回新增成功后的notice的key值
+     */
     add(notice){
-        let {notices} = this.state,
-            flag = false;
-        notice = this.decorateNotice(notice);
-        flag = notices.some((item)=>item.hasMask) || notice.hasMask;
+        const { notices } = this.state;
+        let newNotices=[],
+            hasEqual=false,
+            hasMask = false;
+        //判断新增的notice是否已经存在于当前的notices中
+        newNotices = notices.map((item,index)=>{
+            //浅比对
+            let flag = Object.keys(notice).every(key => {
+                if(typeof notice[key] == 'function'){
+                    return notice[key].toString() === item[key].toString();
+                }
+                return notice[key] === item[key];
+            });
+            //如果存在则使用当前的notice并给count计数加1
+            if(flag){
+                notice = item;
+                item.count += 1;
+                hasEqual = true;
+            }
+            if(item.hasMask) hasMask = true;
+            return item;
+        });
+        if(!hasEqual){
+            notice = this.decorateNotice(notice);
+            newNotices.push(notice)
+        }
         this.setState({
-            notices:[...notices, notice],
-            hasMask:flag
+            notices: newNotices,
+            hasMask: hasMask || notice.hasMask
         });
         return notice.key;
     }
     remove(key){
-        let {notices} = this.state;
-        let newNotices=notices.filter((item)=>{
-            return item.key !== key;
+        this.setState(prevState=>{
+            const {notices} = prevState;
+            let newNotices = notices.filter(item=>item.key!==key);
+            return{
+                notices:newNotices,
+                hasMask:newNotices.some((item)=>item.hasMask)
+            }
         });
-        this.setState({
-            notices:newNotices,
-            hasMask:newNotices.some((item)=>item.hasMask)
-        })
     }
     removeAll(){
         let {notices} = this.state;
@@ -70,10 +96,18 @@ export default class CueBox extends Component{
         let { notices } = this.state;
         let result=[];
         notices.forEach((item)=>{
-            let {component = Toast} = item;
+            let {component = Toast,close} = item;
             delete item.component;
-            result.push( React.createElement(component,item)
-            )
+            // 绑定一个close回调方法
+            const newItem = Object.assign({},item);
+            newItem.close=()=>{
+                if(close){
+                    close()
+                }
+                //调用remove完成notice再CueBox中的卸载
+                this.remove(newItem.key)
+            };
+            result.push(React.createElement(component,newItem))
         });
         return result;
     }
@@ -128,4 +162,4 @@ CueBox.propTypes={
     boxName:PropTypes.string,
     //规则同boxName，为Cue容器遮罩层的样式 默认为cue-mask
     maskName:PropTypes.string
-}
+};

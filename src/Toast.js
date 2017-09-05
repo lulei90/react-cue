@@ -1,6 +1,6 @@
 import React , { Component } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames'
+import classNames from 'classnames';
 export default class Toast extends Component{
     constructor(props,context){
         super(props,context);
@@ -16,8 +16,13 @@ export default class Toast extends Component{
         enterName:'cue-bouncein',
         leaveName:'cue-bounceout',
     }
-    setAnimateTime(time,eTime){
+    init(props){
         this.clearTimer();
+        const {time,eTime,keep}= props;
+        this.state={
+            leave:false,
+        }
+        if(keep)return;
         if(time>eTime){
             this.closeTimer = setTimeout(() => {
                 this.clearTimer();
@@ -28,12 +33,16 @@ export default class Toast extends Component{
         }
     }
     componentDidMount(){
-        let {time,eTime,keep}= this.props;
-        if(keep)return;
-        this.setAnimateTime(time,eTime);
+        this.init(this.props)
     }
     componentWillUnmount () {
         this.clearTimer();
+    }
+    componentWillReceiveProps(nextprops){
+        //判断是否再次加载
+        if(this.props.count !== nextprops.count){
+            this.init(nextprops)
+        }
     }
     clearTimer(){
         this.closeTimer = this.closeTimer && clearTimeout(this.closeTimer) && null;
@@ -61,6 +70,7 @@ export default class Toast extends Component{
             icon
         } = this.props;
         let { leave } =this.state;
+
         let divClassName=classNames({
             [contentName]:true,
             [enterName]:!leave,
@@ -76,7 +86,6 @@ export default class Toast extends Component{
         )
     }
 }
-
 Toast.propTypes={
     prefixCls:PropTypes.string,//Toast className前缀
     keep:PropTypes.bool,//Toast 是否一直保持展示状态
