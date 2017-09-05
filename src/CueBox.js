@@ -44,24 +44,26 @@ export default class CueBox extends Component{
             hasEqual=false,
             hasMask = false;
         //判断新增的notice是否已经存在于当前的notices中
-        newNotices = notices.map((item,index)=>{
-            //浅比对
-            let flag = Object.keys(notice).every(key => {
-                if(notice[key] && !item[key]) return false;
-                if(typeof notice[key] == 'function'){
-                    return notice[key].toString() === item[key].toString();
+        if(notices.length>0){
+            newNotices = notices.map((item,index)=>{
+                //浅比对
+                let flag = Object.keys(notice).every(key => {
+                    if(notice[key] && !item[key]) return false;
+                    if(typeof notice[key] == 'function'){
+                        return notice[key].toString() === item[key].toString();
+                    }
+                    return notice[key] === item[key];
+                });
+                //如果存在则使用当前的notice并给count计数加1
+                if(flag){
+                    notice = item;
+                    item.count += 1;
+                    hasEqual = true;
                 }
-                return notice[key] === item[key];
+                if(item.hasMask) hasMask = true;
+                return item;
             });
-            //如果存在则使用当前的notice并给count计数加1
-            if(flag){
-                notice = item;
-                item.count += 1;
-                hasEqual = true;
-            }
-            if(item.hasMask) hasMask = true;
-            return item;
-        });
+        }
         if(!hasEqual){
             notice = this.decorateNotice(notice);
             newNotices.push(notice)
@@ -98,9 +100,9 @@ export default class CueBox extends Component{
         let result=[];
         notices.forEach((item)=>{
             let {component = Toast,close} = item;
-            delete item.component;
             // 绑定一个close回调方法
             const newItem = Object.assign({},item);
+            delete newItem.component;
             newItem.close=()=>{
                 if(close){
                     close()
