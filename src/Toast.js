@@ -1,4 +1,4 @@
-import React , { Component } from 'react';
+import React , {Component} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 export default class Toast extends Component{
@@ -62,7 +62,7 @@ export default class Toast extends Component{
     render(){
         let {
             prefixCls,
-            boxName = `${prefixCls}-toast-container`,
+            boxName = `${prefixCls}-container`,
             contentName =`${prefixCls}-toast-content`,
             enterName,
             leaveName,

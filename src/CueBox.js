@@ -121,12 +121,14 @@ export default class CueBox extends Component{
         const {
             prefixCls,
             boxName=`${prefixCls}-box`,
-            maskName=`${prefixCls}-mask`
+            maskName=`${prefixCls}-mask`,
+            hideName=`${prefixCls}-hide`,
         } = this.props;
         const { notices,hasMask} = this.state;
         const lengthFlag = notices.length>0;
         let boxClassName=classNames({
             [boxName]:lengthFlag,
+            // [hideName]:!lengthFlag,
             [maskName]:hasMask,
         });
         return(<div className={boxClassName}>
