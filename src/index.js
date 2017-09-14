@@ -1,7 +1,6 @@
 import CueBox from './CueBox'
 import React from 'react'
 import Model from './Model'
-import './index.less'
 const CueBoxCtrl =CueBox.renderBox();
 const Cue = CueBoxCtrl.create({
     msg(content,time,icon){
