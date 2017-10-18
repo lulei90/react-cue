@@ -19,9 +19,9 @@ export default class Toast extends Component{
     init(props){
         this.clearTimer();
         const {time,eTime,keep}= props;
-        this.state={
+        this.setState({
             leave:false,
-        }
+        })
         if(keep)return;
         if(time>eTime){
             this.closeTimer = setTimeout(() => {
