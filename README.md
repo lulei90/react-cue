@@ -1,5 +1,5 @@
 # react-cue
-react 移动Toast提示组件
+基于react15版本 移动Toast提示组件
 该项目使用lib-flexible来进行适配，所以如果使用的是1倍不缩放的viewport请覆盖index.css文件
 ## 安装
 ```
